@@ -1,0 +1,26 @@
+#Set of instructions for analysing ENIGMA data
+The scripts here rely on a working installation of Freesurfer and MATLAB. Please find details on the 
+
+## Step 1. Getting morphometric similarity values from the existing freesurfer folders.  
+1.1. Download the folder with scripts and the fsaverage_HCP template to your preferred location on a unix system and make sure freesurfer is working (e.g. by loading the freesurfer module if required)
+1.2 Make the scripts executable: 
+    chmod +rwx wrapper_script.sh 
+    chmod +rwx subject_MSN.sh
+    or 
+    chmod +777 wrapper_script.sh
+    chmod +777 subject_MSN.sh
+1.3 Run the wrapper script from the directory that the scripts are downloaded into (otherwise the wrapper script won't be able to find the subject_MSN.sh script): 
+./wrapper_script.sh <<please specify the path freesurfer subjects directory here>>
+This script should output a number of labels into the subjects' label folder and should generate lh.HCP-MMP1.stats and rh.HCP-MMP1.stats files, which will be used in the next step.
+ 
+## Step 2. Getting morphometric similarity values from the existing freesurfer folders
+2.1 Start up matlab and open the msn_con.m script
+2.2 In msn_con.m, amend line 4 that specifies the SUBJECTS_DIR where freesurfer folders are located. By default this will output a matrix of morphometric similarity (MS) values with 360 regions, and as many rows as there were freesurfer folders. The outputs will be saved as 'MSN.mat' in the folder from which the msn_con script was ran. If preferred, you can save these outputs to any location by amending line 36: save('/my/path/to/preferred/destination/MSN.mat')
+
+## Step 3. Running morphometric similarity analyses
+3.1 Start up matlab and open the MSN_analysis.m script 
+3.2 Amend line 4 and line 6 to point to the right files:
+      line 4 loads in the outputs from step 2, i.e. the 'MSN.mat' file with morphometric similarity values
+      line 6 loads in the demographic data. Demographic data has to be formatted in a certain way to be compatible with the scripts: notably, the column names have to be named *Dx* for diagnsis, *Age*, *Sex*, *CPZ* for clorpromazine-equivalent doses of antipsychotic medication (please see an example here https://cran.r-project.org/web/packages/chlorpromazineR/vignettes/walkthrough.html), and finally PANSSTOT for total symptoms, PANSSNEG and PANSSPOS for negative and positive symtpoms, respectively. If those are not available, please edit lines 60-106 to remove the lines that include *PANSS* or *CPZ*. Missing data should be coded as NA. If PANSS (or SANS or equivalent) or CPZ data is not available, please create a variable with that respective name, filled with NA.   
+3.3 Once the script is running, please save the data that you are happy to share: please amend the location to your prefered directory in line 106. By default the script only saves the stats outputs. However, if possible, we ask for the complete data for a mega-analysis; please use save('D:\mypath\MSNoutputs.mat') to save all data including the clinical/demographic data.   
+3.4 Once the script is running, please run publish('D:\mypath\MSN_analysis.m', 'outputDir','D:\mypath\MSoutput', 'format','pdf'), amending mypath to match your preferred directories. This will generate a pdf with some visualizations and metrics that we can use to qc whether the analysis ran fine. This will not save any raw data, only figures and stats. 
